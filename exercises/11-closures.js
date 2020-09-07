@@ -1,20 +1,24 @@
 /*
 
-Implement a function countdownGenerator() that takes in a number x
+Create a function called makeLoadedDie() which returns a function that when called,
+seems to generate random numbers between 1 and 6, but in fact returns numbers in a row
+from a hardcoded list.
 
-and returns a function that counts down when it is called (see starter code below).
+Use the closure
 
 */
 
-
-const countdownGenerator = function (x) {
+function makeLoadedDie() {
+  const list = [5, 4, 6, 1, 6, 4, 2, 3, 3, 5];
   /* your code here */
-};
 
-const countdown = countdownGenerator(3);
-countdown(); // T-minus 3...
-countdown(); // T-minus 2...
-countdown(); // T-minus 1...
-countdown(); // Blast Off!
-countdown(); // Rockets already gone, bub!
-countdown(); // Rockets already gone, bub!
+  return function() {
+    /* your code here */
+  }
+}
+
+const rollLoadedDie = makeLoadedDie();
+
+console.log(rollLoadedDie());  // 5
+console.log(rollLoadedDie());  // 4
+console.log(rollLoadedDie());  // 6
