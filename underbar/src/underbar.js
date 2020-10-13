@@ -6,7 +6,9 @@
   // Returns whatever value is passed as the argument. This function doesn't
   // seem very useful, but remember it--if a function needs to provide an
   // iterator when the user does not pass one in, this will be handy.
-  _.identity = function (val) {};
+  _.identity = function (val) {
+    return val
+  };
 
   /**
    * COLLECTIONS
@@ -35,14 +37,35 @@
 
   // Like first, but for the last elements. If n is undefined, return just the
   // last element.
-  _.last = function (array, n) {};
+  _.last = function (array, n) {
+    if (n==0) {
+      return []
+    } else if (n > array.length) {
+      return array
+    } else if (n === undefined) {
+      return array[array.length-1]
+    } else {
+      return array.slice(n-1, array.length)
+    }
+  };
 
   // Call iterator(value, key, collection) for each element of collection.
   // Accepts both arrays and objects.
   //
   // Note: _.each does not have a return value, but rather simply runs the
   // iterator function over each item in the input collection.
-  _.each = function (collection, iterator) {};
+  _.each = function (collection, iterator) {
+    if (Array.isArray(collection) == true) {
+      for (let i=0; i<collection.length; i++) {
+        iterator(collection[i], i, collection);
+      }
+    } else {
+      let keys = Object.keys(collection);
+      for (let i=0; i<keys.length; i++) {
+        iterator(collection[keys[i]], keys[i], collection);
+      }
+    }
+  };
 
   // Returns the index at which value can be found in the array, or -1 if value
   // is not present in the array.
@@ -62,16 +85,45 @@
   };
 
   // Return all elements of an array that pass a truth test.
-  _.filter = function (collection, test) {};
+  _.filter = function (collection, test) {
+    let result = [];
+
+    _.each(collection, function (item, index) {
+      if (test(item) == true) {
+        result.push(collection[index]);
+      }
+    });
+
+    return result
+  };
 
   // Return all elements of an array that don't pass a truth test.
   _.reject = function (collection, test) {
     // TIP: see if you can re-use _.filter() here, without simply
     // copying code in and modifying it
+    let result = [];
+
+    _.each(collection, function (item, index) {
+      if (test(item) == false) {
+        result.push(collection[index]);
+      }
+    })
+
+    return result
   };
 
   // Produce a duplicate-free version of the array.
-  _.uniq = function (array) {};
+  _.uniq = function (array) {
+    let result = [];
+
+    for (let i=0; i<array.length; i++) {
+      if (result.includes(array[i]) == false) {
+        result.push(array[i]);
+      }
+    }
+
+    return result
+  };
 
   // Return the results of applying an iterator to each element.
   _.map = function (collection, iterator) {
