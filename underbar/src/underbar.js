@@ -183,8 +183,13 @@
   //   }); // should be 5, regardless of the iterator function passed in
   //          No accumulator is given so the first element is used.
   _.reduce = function (collection, iterator, initial) {
-    let newCollection = [...collection];
+    let newCollection;
     let accumulator;
+    if (Array.isArray(collection) == true) {
+      newCollection = [...collection];
+    } else {
+      newCollection = {...collection};
+    }
     if (initial == undefined) {
       accumulator = collection[0];
       newCollection.shift();
@@ -194,7 +199,6 @@
     _.each(newCollection, function(item, index) {
       accumulator = iterator(accumulator, item, index, newCollection);
     });
-
     return accumulator
   };
 
@@ -217,6 +221,17 @@
   // Determine whether all of the elements match a truth test.
   _.every = function (collection, iterator) {
     // TIP: Try re-using reduce() here.
+    return _.reduce(collection, function(accumulator, currentValue) {
+      if (accumulator === false) {
+        return false
+      }
+      if (iterator === undefined) {
+        accumulator = Boolean(currentValue);
+      } else {
+        accumulator = Boolean(iterator(currentValue));
+      }
+      return accumulator
+    }, true);
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
