@@ -219,26 +219,39 @@
   };
 
   // Determine whether all of the elements match a truth test.
-  _.every = function (collection, iterator) {
+  _.every = function (collection, iterator = (currentValue) => Boolean(currentValue)) {
     // TIP: Try re-using reduce() here.
     return _.reduce(collection, function(accumulator, currentValue) {
-      if (accumulator === false) {
+      if (!accumulator) {
         return false
       }
-      if (iterator === undefined) {
-        accumulator = Boolean(currentValue);
-      } else {
-        accumulator = Boolean(iterator(currentValue));
-      }
+      accumulator = Boolean(iterator(currentValue));
       return accumulator
     }, true);
   };
-
+  // some([1, 2, 3, 4], isEven) => true
+  // some([1, 1, 1, 1], isEven) => false
+  // every([1, 1, 1, 1], isEven) => false
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
-  _.some = function (collection, iterator) {
+  _.some = function (collection, iterator = (currentValue) => Boolean(currentValue)) {
     // TIP: There's a very clever way to re-use every() here.
+    return !_.every(collection, function (currentValue) {return !iterator(currentValue)})
   };
+
+/*   _.some = function (collection, iterator = (currentValue) => Boolean(currentValue)) {
+    // TIP: There's a very clever way to re-use every() here.
+    console.log('=============================')
+    return _.reduce(collection, function(accumulator, currentValue) {
+      if (accumulator) {
+        return true
+      }
+      console.log(accumulator);
+      accumulator = Boolean(iterator(currentValue));
+      console.log(accumulator);
+      return accumulator
+    }, false);
+  }; */
 
   /**
    * OBJECTS
@@ -248,7 +261,7 @@
    */
 
   // Extend a given object with all the properties of the passed in
-  // object(s).
+  // obje1ct(s).
   //
   // Example:
   //   var obj1 = {key1: "something"};
@@ -258,11 +271,25 @@
   //   }, {
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
-  _.extend = function (obj) {};
-
+  _.extend = function (obj) {
+    let collection = {...arguments};
+    for (let i=1; i<Object.keys(collection).length; i++) {
+      obj = {...obj, ...collection[i]};
+    }
+    return obj
+  };  
+ 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
-  _.defaults = function (obj) {};
+  _.defaults = function (obj) {
+    let result = {};
+    let collection = {...arguments};
+    for (let i=1; i<Object.keys(collection).length; i++) {
+      result = {...result, ...collection[i]};
+    }
+    result = {...result, ...obj}
+    return result
+  };
 
   /**
    * FUNCTIONS
