@@ -274,7 +274,11 @@
   _.extend = function (obj) {
     let collection = {...arguments};
     for (let i=1; i<Object.keys(collection).length; i++) {
-      obj = {...obj, ...collection[i]};
+      let argument = collection[i];
+      let argumentKeys = Object.keys(argument);
+      for (let j=0; j<argumentKeys.length; j++) {
+        obj[argumentKeys[j]] = argument[argumentKeys[j]];
+      }
     }
     return obj
   };  
@@ -282,13 +286,17 @@
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function (obj) {
-    let result = {};
     let collection = {...arguments};
     for (let i=1; i<Object.keys(collection).length; i++) {
-      result = {...result, ...collection[i]};
+      let argument = collection[i];
+      let argumentKeys = Object.keys(argument);
+      for (let j=0; j<argumentKeys.length; j++) {
+        if (obj[argumentKeys[j]] == undefined) {
+          obj[argumentKeys[j]] = argument[argumentKeys[j]];
+        }
+      }
     }
-    result = {...result, ...obj}
-    return result
+    return obj
   };
 
   /**
