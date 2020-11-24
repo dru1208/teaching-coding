@@ -338,7 +338,16 @@
   // _.memoize should return a function that, when called, will check if it has
   // already computed the result for the given argument and return that value
   // instead if possible.
-  _.memoize = function (func) {};
+  _.memoize = function (func) {
+    let storage = {};
+    return function(...args) {
+      if (storage[args]) {
+        return storage[args]
+      } else {
+        return storage[args] = func(...args)
+      }
+    }
+  };
 
   // Delays a function for the given number of milliseconds, and then calls
   // it with the arguments supplied.
@@ -346,7 +355,15 @@
   // The arguments for the original function are passed after the wait
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
-  _.delay = function (func, wait) {};
+  _.delay = function (func, wait) {
+    let params = [];
+    for (let i=2; i<arguments.length; i++) {
+      params.push(arguments[i]);
+    }
+    setTimeout(function() {
+      func(...params);  
+    }, wait); 
+  };
 
   /**
    * ADVANCED COLLECTION OPERATIONS
@@ -358,7 +375,18 @@
   // TIP: This function's test suite will ask that you not modify the original
   // input array. For a tip on how to make a copy of an array, see:
   // http://mdn.io/Array.prototype.slice
-  _.shuffle = function (array) {};
+  _.shuffle = function (array) {
+    var copy = [...array];
+    var currentIndex = copy.length, temporaryValue, randomIndex;
+    while (0 !== currentIndex) {
+      randomIndex = Math.floor(Math.random()*currentIndex);
+      currentIndex -= 1;
+      temporaryValue = copy[currentIndex];
+      copy[currentIndex] = copy[randomIndex]
+      copy[randomIndex] = temporaryValue;
+    }
+    return copy
+  };
 
   /**
    * ADVANCED
@@ -370,7 +398,20 @@
 
   // Calls the method named by functionOrKey on each value in the list.
   // Note: You will need to learn a bit about .apply to complete this.
-  _.invoke = function (collection, functionOrKey, args) {};
+  _.invoke = function (collection, functionOrKey, args) {
+    let result = [];
+    if (typeof(functionOrKey === "function")) {
+      for (let i=0; i<collection.length; i++) {
+        result.push(functionOrKey.apply(collection[i]))
+      }
+      return result
+    } else {
+      for (let i=0; i<collection.length; i++) {
+        result.push(functionOrKey(collection[i]));
+      }
+      return result
+    }
+  };
 
   // Sort the object's values by a criterion produced by an iterator.
   // If iterator is a string, sort objects by that property with the name
