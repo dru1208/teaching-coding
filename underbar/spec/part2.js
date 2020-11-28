@@ -451,7 +451,7 @@
         memoSpy([1,2,3]);
         expect(spy).to.have.been.calledOnce;
       });
-
+ 
       it('should run the memoized function twice when given an array and then given a list of arguments', function() {
         // Be careful how you are checking if a set of arguments has been passed in already
         var spy = sinon.spy(function() { return 'Dummy output'; });

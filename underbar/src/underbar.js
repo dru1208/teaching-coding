@@ -341,10 +341,11 @@
   _.memoize = function (func) {
     let storage = {};
     return function(...args) {
-      if (storage[args]) {
-        return storage[args]
+      const stringifiedArgs = JSON.stringify(args);
+      if (storage[stringifiedArgs]) {
+        return storage[stringifiedArgs]
       } else {
-        return storage[args] = func(...args)
+        return storage[stringifiedArgs] = func(...args)
       }
     }
   };
@@ -400,14 +401,14 @@
   // Note: You will need to learn a bit about .apply to complete this.
   _.invoke = function (collection, functionOrKey, args) {
     let result = [];
-    if (typeof(functionOrKey === "function")) {
+    if (typeof functionOrKey === "function") {
       for (let i=0; i<collection.length; i++) {
         result.push(functionOrKey.apply(collection[i]))
       }
       return result
     } else {
       for (let i=0; i<collection.length; i++) {
-        result.push(functionOrKey(collection[i]));
+        result.push(collection[i][functionOrKey]()); // VERY IMPORTANT - ALL THINGS IN JS ARE OBJECTS, THEY ALL HAVE FUNCTION PROPERTIES INSIDE OF THEM
       }
       return result
     }
@@ -417,28 +418,108 @@
   // If iterator is a string, sort objects by that property with the name
   // of that string. For example, _.sortBy(people, 'name') should sort
   // an array of people by their name.
-  _.sortBy = function (collection, iterator) {};
+  _.sortBy = function (collection, iterator) {
+    if (typeof(iterator) === 'string') {
+      return collection.sort(function(a, b) {return a[iterator] - b[iterator]})
+    } else {
+      return collection.sort(function(a, b) {return iterator(a) - iterator(b)})
+    }
+  };
 
   // Zip together two or more arrays with elements of the same index
   // going together.
   //
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
-  _.zip = function () {};
+  _.zip = function () {
+    let argLengths = [];
+    let result = [];
+    for (let i=0; i<arguments.length; i++) {
+      argLengths.push(arguments[i].length);
+    }
+    let maxLength = Math.max(...argLengths);
+    for (let i=0; i<maxLength; i++) {
+      let resultByIndex = []
+      for (let j=0; j<arguments.length; j++) {
+        resultByIndex.push(arguments[j][i]);
+      }
+      result.push(resultByIndex);
+    }
+    return result
+  };
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
   // The new array should contain all elements of the multidimensional array.
   //
   // Hint: Use Array.isArray to check if something is an array
-  _.flatten = function (nestedArray, result) {};
+
+  _.flatten = function (nestedArray, result) {
+    result = [];
+    for (let i=0; i<nestedArray.length; i++) {
+      if (Array.isArray(nestedArray[i])) {
+        result = result.concat(...nestedArray[i])
+      } else {
+        result.push(nestedArray[i])
+      }
+    }
+    for (let i=0; i<result.length; i++) {
+      if (Array.isArray(result[i])) {
+        result[i] = JSON.parse(JSON.stringify(result[i]).replace(/[\[\]']+/g,''));
+      }
+    }
+    return result
+  }; 
 
   // Takes an arbitrary number of arrays and produces an array that contains
   // every item shared between all the passed-in arrays.
-  _.intersection = function () {};
+  _.intersection = function () {
+    let result = [];
+    let temp = [];
+    for (let i=0; i<arguments.length; i++) {
+      temp = temp.concat(_.flatten(arguments[i]));
+    }
+    let counter = {}
+    for (let i=0; i<temp.length; i++) {
+      if (counter[temp[i]] == undefined) {
+        counter[temp[i]] = 0
+      } else {
+        counter[temp[i]] += 1
+      }
+    }
+    let keys = Object.keys(counter);
+    for (let i=0; i<keys.length; i++) {
+      if (counter[keys[i]] > 0) {
+        result.push(keys[i])
+      }
+    }
+    return result
+  };
 
   // Take the difference between one array and a number of other arrays.
   // Only the elements present in just the first array will remain.
-  _.difference = function (array) {};
+  _.difference = function (array) {
+    console.log(arguments);
+    let result = [];
+    let temp = [];
+    for (let i=0; i<arguments.length; i++) {
+      temp = temp.concat(_.flatten(arguments[i]));
+    }
+    let counter = {}
+    for (let i=0; i<temp.length; i++) {
+      if (counter[temp[i]] == undefined) {
+        counter[temp[i]] = 0
+      } else {
+        counter[temp[i]] += 1
+      }
+    }
+    let keys = Object.keys(counter);
+    for (let i=0; i<keys.length; i++) {
+      if (counter[keys[i]] == 0) {
+        result.push(JSON.parse(keys[i]))
+      }
+    }
+    return result
+  };
 
   // Returns a function, that, when invoked, will only be triggered at most once
   // during a given window of time.  See the Underbar readme for extra details
