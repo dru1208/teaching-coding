@@ -526,5 +526,16 @@
   // on this function.
   //
   // Note: This is difficult! It may take a while to implement.
-  _.throttle = function (func, wait) {};
+
+  // If wait time of 2000ms it runs once in that 2000ms, if another 2000ms passes you can call it again - prevents calling on the function if time has not elapsed
+  _.throttle = function (func, wait) {
+    let shouldRun = true;
+    return function() {
+      if (shouldRun) {
+        func();
+        shouldRun = false;
+        setTimeout(function() {shouldRun = true}, wait);
+      }
+    }
+  };
 })();
